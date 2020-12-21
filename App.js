@@ -1,16 +1,18 @@
 import {StatusBar} from 'expo-status-bar';
 import React from 'react';
-import {Image, Platform, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {Image, Platform, StyleSheet, Text, View, TouchableOpacity, ImageBackground} from 'react-native';
 import logo from './assets/logo.png';
 import * as ImagePicker from 'expo-image-picker';
 import * as Sharing from 'expo-sharing';
 import uploadToAnonymousFilesAsync from 'anonymous-files';
 
+const bg = require('./assets/bg.jpg');
+
 export default function App() {
     const [selectedImage, setSelectedImage] = React.useState(null);
 
     let openImagePickerAsync = async () => {
-        let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (permissionResult.granted === false) {
             alert("Permission to access camera roll is required!");
@@ -44,27 +46,33 @@ export default function App() {
         return (
             <View style={styles.container}>
                 <Image
-                    source={{ uri: selectedImage.localUri }}
+                    source={{ uri:selectedImage.localUri }}
                     style={styles.thumbnail}
                 />
+                <TouchableOpacity onPress={openShareDialogAsync} style={styles.button}>
+                    <Text style={styles.buttonText}>Share this picture</Text>
+                </TouchableOpacity>
             </View>
-        );
+        )
     }
 
     return (
         <View style={styles.container}>
-
+            <ImageBackground source={bg} style={styles.bgImage}>
             {/*Loading image by using URL*/}
             <Image source={{uri: "https://i.imgur.com/TkIrScD.png"}} style={styles.logo}/>
             <Text style={styles.instructions}>
                 To share a photo from your phone with a friend, just click a button
             </Text>
 
-            <TouchableOpacity onPress={openShareDialogAsync} style={styles.button}>
-                <Text style={styles.buttonText}>Share this photo</Text>
+            <TouchableOpacity
+                onPress={openImagePickerAsync}
+                style={styles.button}>
+                <Text style={styles.buttonText}>Choose a picture</Text>
             </TouchableOpacity>
 
             <StatusBar style="auto"/>
+            </ImageBackground>
         </View>
     );
 }
@@ -72,7 +80,7 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -82,23 +90,31 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     instructions: {
-        color: '#888',
+        color: 'green',
         fontSize: 18,
         marginHorizontal: 15,
         marginBottom: 10,
+        fontWeight: 'bold',
     },
     button: {
-        backgroundColor: "blue",
+        backgroundColor: "#bbd9bb",
         padding: 20,
         borderRadius: 5,
+        marginTop: 10,
     },
     buttonText: {
-        fontSize: 20,
-        color: '#fff',
+        fontSize: 22,
+        color: '#034803',
     },
     thumbnail: {
         width: 300,
         height: 300,
         resizeMode: "contain"
+    },
+    bgImage: {
+        flex: 1,
+        resizeMode: "cover",
+        justifyContent: "center",
+        alignItems: "center",
     },
 });
